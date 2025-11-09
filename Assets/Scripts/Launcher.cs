@@ -13,14 +13,30 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
+        if (PhotonNetwork.IsConnected)
+        {
+            JoinRoomLogic();
+        }
+        else
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
+
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Master");
-        PhotonNetwork.JoinRandomOrCreateRoom();
+        JoinRoomLogic();
     }
+
+    private void JoinRoomLogic()
+    {
+        PhotonNetwork.JoinRandomOrCreateRoom(
+            roomOptions: new RoomOptions { MaxPlayers = 4 }
+        );
+    }
+
 
     public override void OnJoinedRoom()
     {
