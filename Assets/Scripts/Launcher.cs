@@ -19,6 +19,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // // Aumentar frecuencia de actualización de la red para mejorar la sincronización (pasar de 10 a 30)
+        // PhotonNetwork.SendRate = 30;
+        // PhotonNetwork.SerializationRate = 30;
+
         if (PhotonNetwork.IsConnected)
         {
             JoinRoomLogic();
