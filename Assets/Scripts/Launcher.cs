@@ -23,6 +23,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         // PhotonNetwork.SendRate = 30;
         // PhotonNetwork.SerializationRate = 30;
 
+        Application.targetFrameRate = 60;
+
         if (PhotonNetwork.IsConnected)
         {
             JoinRoomLogic();
