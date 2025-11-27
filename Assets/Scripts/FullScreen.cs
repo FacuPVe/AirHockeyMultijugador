@@ -1,0 +1,21 @@
+using UnityEngine;
+
+public class FullScreen : MonoBehaviour
+{
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            Screen.fullScreen = !Screen.fullScreen;
+
+            Debug.Log("Fullscreen activated: " + Screen.fullScreen);
+        }
+    }
+}
