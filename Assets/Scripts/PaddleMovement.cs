@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 
 {
-    private PhotonView photonView;
     private Rigidbody rb;
     private Camera mainCamera;
     private bool isBeingControlled = false;
@@ -35,7 +34,6 @@ public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IP
 
     void Awake()
     {
-        photonView = GetComponent<PhotonView>();
         rb = GetComponent<Rigidbody>();
         mainCamera = Camera.main;
 

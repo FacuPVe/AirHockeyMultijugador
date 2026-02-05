@@ -11,10 +11,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     private string puckPrefabName = "PuckPrefab";
 
     [Header("Spawn Point")]
-    [SerializeField]
-    private Transform spawnPointP1;
-    [SerializeField]
-    private Transform spawnPointP2;
+    [SerializeField] private Transform spawnPointP1;
+    [SerializeField] private Transform spawnPointP2;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -60,7 +58,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         Vector3 spawnPosition;
 
-        if(PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
         {
             spawnPosition = spawnPointP1 != null ? spawnPointP1.position : new Vector3(0f, 0.5f, -8f);
         }
@@ -75,7 +73,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             Debug.Log("MasterClient ha instanciado el disco");
             Vector3 puckSpawn = new Vector3(0f, 0.3f, 0f);
-            PhotonNetwork.Instantiate("PuckPrefab", puckSpawn, Quaternion.identity);
+            PhotonNetwork.Instantiate(puckPrefabName, puckSpawn, Quaternion.identity);
         }
     }
     // Update is called once per frame
