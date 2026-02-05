@@ -60,7 +60,6 @@ public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IP
         if (photonView.IsMine)
         {
             MovePaddle();
-
         }
     }
 
