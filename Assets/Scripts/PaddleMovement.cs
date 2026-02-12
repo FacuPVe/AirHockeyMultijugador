@@ -3,13 +3,10 @@ using Photon.Pun;
 using UnityEngine.EventSystems;
 
 public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
-
 {
     private Rigidbody rb;
     private Camera mainCamera;
     private bool isBeingControlled = false;
-
-
 
     // Variables para restringir el movimiento del paddle
 
@@ -61,7 +58,6 @@ public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IP
         }
     }
 
-
     private void MovePaddle()
     {
         if (!isBeingControlled)
@@ -96,8 +92,6 @@ public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IP
         }
     }
 
-
-
     public void OnPointerUp(PointerEventData eventData)
     {
         if (photonView.IsMine)
@@ -107,12 +101,10 @@ public class PaddleMovement : MonoBehaviourPunCallbacks, IPointerDownHandler, IP
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-
     void Start()
     {
 
     }
-
 
     // Update is called once per frame
     void Update()

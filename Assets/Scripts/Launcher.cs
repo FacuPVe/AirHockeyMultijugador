@@ -4,11 +4,9 @@ using Photon.Realtime;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
-    [SerializeField]
-    private string playerPrefabName = "PlayerPrefab";
+    [SerializeField] private string playerPrefabName = "PlayerPrefab";
 
-    [SerializeField]
-    private string puckPrefabName = "PuckPrefab";
+    [SerializeField] private string puckPrefabName = "PuckPrefab";
 
     [Header("Spawn Point")]
     [SerializeField] private Transform spawnPointP1;
@@ -23,6 +21,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         Application.targetFrameRate = 60;
 
+        if (PhotonNetwork.InRoom)
+        {
+            Debug.Log("Launcher: Ya estamos en una sala. Iniciando juego...");
+            StartGame();
+        }
         if (PhotonNetwork.IsConnected)
         {
             JoinRoomLogic();
@@ -54,11 +57,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("Player joined Room");
+        Debug.Log("Launcher: Unido a sala (desde lógica interna). Iniciando juego...");
+        StartGame();
+    }
 
+    void StartGame()
+    {
         Vector3 spawnPosition;
 
-        if (PhotonNetwork.IsMasterClient)
+        if(PhotonNetwork.IsMasterClient)
         {
             spawnPosition = spawnPointP1 != null ? spawnPointP1.position : new Vector3(0f, 0.5f, -8f);
         }
@@ -66,16 +73,19 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             spawnPosition = spawnPointP2 != null ? spawnPointP2.position : new Vector3(0f, 0.5f, 8f);
         }
-        // Instanciar Prefab
+        
+        // Instanciar Prefab del Jugador
         PhotonNetwork.Instantiate(this.playerPrefabName, spawnPosition, Quaternion.identity);
 
+        // Instanciar Disco (Solo Master)
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.Log("MasterClient ha instanciado el disco");
             Vector3 puckSpawn = new Vector3(0f, 0.3f, 0f);
-            PhotonNetwork.Instantiate(puckPrefabName, puckSpawn, Quaternion.identity);
+            PhotonNetwork.Instantiate(this.puckPrefabName, puckSpawn, Quaternion.identity);
         }
     }
+    
     // Update is called once per frame
     void Update()
     {
