@@ -2,11 +2,18 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    [Header("Players Score")]
     [SerializeField] private TextMeshProUGUI scoreP1Text;
     [SerializeField] private TextMeshProUGUI scoreP2Text;
+
+    [Header("Room Info")]
+    [SerializeField] private TextMeshProUGUI roomNameText;
+    [SerializeField] private TMP_InputField roomNameInput;
+    [SerializeField] private GameObject confirmNameButton;
 
     private int scoreP1 = 0;
     private int scoreP2 = 0;
@@ -17,12 +24,19 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         puck = GameObject.FindGameObjectWithTag("Puck");
+
+        // Actualizar información de la sala y permisos
+        UpdateRoomInfoUI();
+        CheckMasterPermissions();
     }
 
     public override void OnJoinedRoom()
     {
         Debug.Log("GameManager: Jugador entró a la sala");
         UpdateScoreUI();
+
+        UpdateRoomInfoUI();
+        CheckMasterPermissions();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -35,6 +49,74 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("GameManager: Jugador salió: " + otherPlayer.NickName);
         UpdateScoreUI();
+
+        // Cuando el Master se vaya, Photon escogerá automáticamente al jugador restante/ facundo2005
+
+        // Se tendrá que esperar OnMasterClientSwitched para actualizar permisos
+    }
+
+    // Método que llama Photon automáticamente al detectar que el master se ha ido y hay uno nuevo
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        Debug.Log("Ha cambiado el Master Client. Master actual: " + newMasterClient.NickName);
+        CheckMasterPermissions();
+    }
+
+    // Activa o desactiva la UI del Master dependiendo de si eres el administrador de la sala
+    void CheckMasterPermissions()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (roomNameInput != null) roomNameInput.interactable = true;
+            if (confirmNameButton != null) confirmNameButton.SetActive(true);
+        }
+        else
+        {
+            if (roomNameInput != null) roomNameInput.interactable = false;
+            if (confirmNameButton != null) confirmNameButton.SetActive(false);
+        }
+    }
+
+    // Función para el botón que confirmará el cambio de nombre de sala
+    public void OnClickChangeRoomName()
+    {
+        if (roomNameInput != null && !string.IsNullOrEmpty(roomNameInput.text))
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Hashtable props = new Hashtable { { "visibleName", roomNameInput.text } };
+                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+
+                roomNameInput.text = "";
+            }
+        }
+    }
+
+    // Función que Photon llama automáticamente al detectar un cambio en las propiedades almacenadas, como el nombre de sala
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        if (propertiesThatChanged.ContainsKey("visibleName"))
+        {
+            UpdateRoomInfoUI();
+        }
+    }
+
+    // Función que se encarga de actualizar el nombre de la sala
+    void UpdateRoomInfoUI()
+    {
+        if (PhotonNetwork.CurrentRoom == null) return;
+
+        string currentName = PhotonNetwork.CurrentRoom.Name;
+
+        if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("visibleName"))
+        {
+            currentName = (string)PhotonNetwork.CurrentRoom.CustomProperties["visibleName"];
+        }
+
+        if (roomNameText != null)
+        {
+            roomNameText.text = "Sala: " + currentName;
+        }
     }
 
     public void ScoreGoal(int scoringPlayerID)
@@ -72,6 +154,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             ResetPuck();
         }
+
     }
 
     void UpdateScoreUI()
@@ -85,7 +168,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (Player player in players)
         {
             Debug.Log($"Jugador encontrado - ActorNumber: {player.ActorNumber}, NickName: {player.NickName}, IsMasterClient: {player.IsMasterClient}");
-            
+
             if (player.ActorNumber == 1)
             {
                 player1 = player; // Master client
